@@ -1,0 +1,95 @@
+# ----------------------
+# GKE Tutorial :: Deploy a prebuilt docker container image
+# A small Hello-World demo
+# This tutorial is no longer available at GKE Tutorials, so steps below
+#
+# Jorge Roque Matias
+# v1.1 - March 2022
+# ----------------------
+
+# Select the Project where to make the deploy
+# Create a 3 node Kubernetes Cluster
+
+# Open Cloud Shell
+
+# Clone the sample code from GCP Git
+git clone https://github.com/GoogleCloudPlatform/kubernetes-engine-samples
+
+# Navigate to the directory containing the sample code
+cd kubernetes-engine-samples/hello-app
+
+# View the application code // view the code version 1.0.0
+cat main.go
+
+# View the docker image configuration
+cat Dockerfile
+
+# Setup gcloud and kubectl credentials
+# Wait for the cluster creation to finish
+# Replace [cluster-name] and [cluster-zone] with the name and zone of the instance that you created.
+# example: gcloud container clusters get-credentials cluster-1 --zone us-central1-c
+gcloud container clusters get-credentials [cluster-name] --zone [cluster-zone]
+ 
+#
+# Note that 
+# $DEVSHELL_PROJECT_ID Linux/shell Environment Variable will contain current project
+# $PWD is a variable pointing to the "current work directory/folder" (same as .)
+
+# Build the image
+docker build -t gcr.io/$DEVSHELL_PROJECT_ID/hello-app:v1 $PWD
+
+# Push the image to Google Container Registry (GCR)
+gcloud docker -- push gcr.io/$DEVSHELL_PROJECT_ID/hello-app:v1
+
+# Deploy and run the application (container) on your Kubernetes cluster based on the image from GCR
+kubectl create deployment hello-app --image=gcr.io/$DEVSHELL_PROJECT_ID/hello-app:v1
+
+# Make the cluster available to the public
+kubectl expose deployment hello-app --type="LoadBalancer" --port 8080
+
+# List the services and look for the hello-app service External-IP:
+# Wait for the external IP to come-up !
+kubectl get service hello-app --watch
+
+# Copy the IP address from the External IP column open in browser
+http://[external-IP]:8080
+
+# Modifying your cluster
+# Use the following command to scale your application up to four replicas
+kubectl scale deployment hello-app --replicas=4
+
+# View your application settings
+kubectl get deployment
+kubectl get pods
+
+# Modify the application code
+# Use this command to make a text substitution in local copy of main.go from version 1.0.0 to 2.0.0
+# You can also modify the file with a text editor (nono/vi) instead of using this command
+sed -i -e 's/1.0.0/2.0.0/g' main.go
+cat main.go
+
+# Rebuild the application container
+docker build -t gcr.io/$DEVSHELL_PROJECT_ID/hello-app:v2 $PWD
+
+# Push the container/application image to Google Container Registry (GCR)
+gcloud docker -- push gcr.io/$DEVSHELL_PROJECT_ID/hello-app:v2
+
+# Update the application image on the k8s cluster based on v2 image published on GCR
+kubectl set image deployment/hello-app hello-app=gcr.io/$DEVSHELL_PROJECT_ID/hello-app:v2 && echo 'image updated'
+
+# List the services, and look for the hello-app service External-IP
+kubectl get service hello-app --watch
+
+# Wait some minutes or refresh browser
+# Copy the IP address from the External IP column.
+http://[external-IP]:8080
+
+# View cluster details
+# Click the name of the cluster that you created. This opens the cluster details page
+
+# Cleanup
+# Delete the services you created to remove the load balancing resources that are provisioned to serve them
+kubectl delete service hello-app
+
+# Delete the cluster
+# To remove your cluster, select the tick box next to the cluster name and click the Delete button
