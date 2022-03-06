@@ -103,7 +103,7 @@ kubectl delete service hello-app
 # Delete the cluster
 # To remove your cluster execute command 
 # Or in console select the tick box next to the cluster name and click the Delete button
-# example: --num
+# example: gcloud container clusters delete cluster-1 --zone us-central1-c
 gcloud container clusters delete [cluster-name] --zone [cluster-zone]
 
 # Delete Container Registry Images
