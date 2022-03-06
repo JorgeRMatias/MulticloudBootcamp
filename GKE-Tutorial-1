@@ -4,14 +4,17 @@
 # This tutorial is no longer available at GKE Tutorials, so steps below
 #
 # Jorge Roque Matias
-# v1.2 - March 2022
+# v1.3 - March 2022
 # Git : https://github.com/JorgeRMatias/MulticloudBootcamp/blob/main/GKE-Tutorial-1
 # ----------------------
 
 # Select the Project where to make the deploy
-# Create a 3 node GKE Standard Kubernetes Cluster, selecting Zone
 
 # Open Cloud Shell
+
+# Create a 3 node GKE Standard Kubernetes Cluster, selecting Zone
+# example: gcloud container clusters create cluster-1 --zone us-central1-c --num-nodes=3
+gcloud container clusters create [cluster-name] --zone [cluster-zone] --num-nodes=3
 
 # Clone the sample code from GCP Git
 git clone https://github.com/GoogleCloudPlatform/kubernetes-engine-samples
@@ -100,7 +103,7 @@ kubectl delete service hello-app
 # Delete the cluster
 # To remove your cluster execute command 
 # Or in console select the tick box next to the cluster name and click the Delete button
-# example: gcloud container clusters delete cluster-1 --zone us-central1-c 
+# example: --num
 gcloud container clusters delete [cluster-name] --zone [cluster-zone]
 
 # Delete Container Registry Images
@@ -108,3 +111,6 @@ gcloud container clusters delete [cluster-name] --zone [cluster-zone]
 gcloud container images list
 gcloud container images delete gcr.io/$DEVSHELL_PROJECT_ID/hello-app:v1
 gcloud container images delete gcr.io/$DEVSHELL_PROJECT_ID/hello-app:v2
+
+# Have a nice :) kluster day
+# JRM
